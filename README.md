@@ -1,6 +1,8 @@
 # Twerk Race — Animation Lab
 
-Public, self-contained browser preview for comparing run-animation variants A–E and four weight stages.
+Public, self-contained browser preview for comparing run-animation variants A–F and E2 across four weight stages.
+
+E2 ("even E") uses the same Meshy clips as E with one closed loop per stage, aligned foot contacts, stage 4 built on the stage 3 step and a shared clock. Direct link: <https://grendizer1.github.io/twerk-race-preview/?variant=even>
 
 Open the live preview: <https://grendizer1.github.io/twerk-race-preview/>
 
