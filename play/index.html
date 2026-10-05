@@ -5,7 +5,7 @@
 <script>
 const canvas=document.getElementById('game');
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
-const config={dataUrl:'Build/9f3e27b1944c35e6abc7a04741135266.data',frameworkUrl:'Build/4637a6b4c98fc16ec71d3b9d124d005e.framework.js',codeUrl:'Build/752145651b67e513d1752790808251ae.wasm',streamingAssetsUrl:'StreamingAssets',companyName:'EccentricGames',productName:'twerk-race',productVersion:'0.7.3',devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5)};
+const config={dataUrl:'Build/05c2ff41a0c8d0e35bd6b93f5129019b.data',frameworkUrl:'Build/4637a6b4c98fc16ec71d3b9d124d005e.framework.js',codeUrl:'Build/ac482cec09d3f0aab242f9631cc66368.wasm',streamingAssetsUrl:'StreamingAssets',companyName:'EccentricGames',productName:'twerk-race',productVersion:'0.7.3',devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5)};
 // SDK initialization can finish before or after Unity. No user language override.
 let sdkLanguage='ru';
 window.twerkRaceUseYandexSdk=sdk=>{
@@ -50,7 +50,7 @@ window.twerkRaceGameplay=state=>{
   const gameplay=window.ysdk.features.GameplayAPI;
   if(gameplay)active?gameplay.start():gameplay.stop();
 };
-const script=document.createElement('script');script.src='Build/9e0ba408a30b83b8e2ad50af3b8befdf.loader.js';
+const script=document.createElement('script');script.src='Build/346e460f785e7699407c34495ea85c03.loader.js';
 script.onload=()=>createUnityInstance(canvas,config,p=>document.getElementById('fill').style.width=(p*100)+'%').then(async instance=>{
   window.unityInstance=instance;
   const sdk=await sdkPromise;
