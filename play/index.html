@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><link rel="icon" href="data:,"><title>Twerk Race</title>
+<style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:radial-gradient(ellipse at top,#64476e,#1e294b);color:#fff3df;font:16px system-ui}#game{display:block;width:100%;height:100%;touch-action:none;outline:none}#loading{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:linear-gradient(145deg,#25344b,#246b70);gap:18px}h1{letter-spacing:.12em;font-size:30px;margin:0}#bar{height:8px;width:250px;background:#ffffff25;border-radius:8px;overflow:hidden}#fill{height:100%;width:0;background:#36cdb3;transition:width .2s}#error{max-width:80vw;white-space:pre-wrap;color:#ffbdc0}</style></head>
+<body><canvas id="game" tabindex="0"></canvas><div id="loading"><h1>TWERK RACE</h1><div id="bar"><div id="fill"></div></div><div id="error"></div></div>
+<script>
+const canvas=document.getElementById('game');
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+const config={dataUrl:'Build/9f3e27b1944c35e6abc7a04741135266.data',frameworkUrl:'Build/4637a6b4c98fc16ec71d3b9d124d005e.framework.js',codeUrl:'Build/752145651b67e513d1752790808251ae.wasm',streamingAssetsUrl:'StreamingAssets',companyName:'EccentricGames',productName:'twerk-race',productVersion:'0.7.3',devicePixelRatio:Math.min(window.devicePixelRatio||1,1.5)};
+// SDK initialization can finish before or after Unity. No user language override.
+let sdkLanguage='ru';
+window.twerkRaceUseYandexSdk=sdk=>{
+  const language=sdk && sdk.environment && sdk.environment.i18n && sdk.environment.i18n.lang;
+  if(typeof language!=='string'||!language.trim())return;
+  sdkLanguage=language;
+  if(window.unityInstance)window.unityInstance.SendMessage('Game','SetSdkLanguage',sdkLanguage);
+};
+let sdkReadySent=false, gameplayActive=false, platformPaused=false, apiPaused=false;
+// Game and sound stop on game_api_pause (ads, purchase window, tab switch) and whenever the tab is hidden.
+const setPlatformPause=()=>{
+  const paused=apiPaused||document.hidden;
+  if(paused===platformPaused)return;
+  platformPaused=paused;
+  window.unityInstance?.SendMessage('Game','SetSdkPause',String(paused));
+};
+document.addEventListener('visibilitychange',setPlatformPause);
+const localPreview=['localhost','127.0.0.1','::1','[::1]'].includes(location.hostname)||
+  (location.hostname==='grendizer1.github.io'&&location.pathname.startsWith('/twerk-race-preview/'));
+const sdkPromise=(async()=>{
+  // Local preview without the SDK: ads use the stub (GameBridge.jslib), as in the editor.
+  if(localPreview&&!window.YaGames&&!window.ysdk){window.twerkRaceLocalPreview=true;return null;}
+  if(!window.YaGames&&!window.ysdk)await new Promise((resolve,reject)=>{
+    const sdkScript=document.createElement('script');sdkScript.src='/sdk.js';
+    sdkScript.onload=resolve;sdkScript.onerror=()=>reject(new Error('Yandex SDK loading failed'));
+    document.head.appendChild(sdkScript);
+  });
+  const sdk=window.ysdk||await YaGames.init();window.ysdk=sdk;
+  window.twerkRaceUseYandexSdk(sdk);
+  sdk.on('game_api_pause',()=>{apiPaused=true;setPlatformPause();});
+  sdk.on('game_api_resume',()=>{apiPaused=false;setPlatformPause();});
+  return sdk;
+})();
+// Attach a handler immediately, including when SDK fails before Unity finishes loading.
+sdkPromise.catch(error=>{document.getElementById('error').textContent=error.message;});
+window.twerkRaceGameplay=state=>{
+  canvas.dataset.gameState=JSON.stringify(state);
+  if(!sdkReadySent||!window.ysdk)return;
+  const active=!state.paused&&state.phase!=='Ready'&&state.phase!=='Result';
+  if(active===gameplayActive)return;
+  gameplayActive=active;
+  const gameplay=window.ysdk.features.GameplayAPI;
+  if(gameplay)active?gameplay.start():gameplay.stop();
+};
+const script=document.createElement('script');script.src='Build/9e0ba408a30b83b8e2ad50af3b8befdf.loader.js';
+script.onload=()=>createUnityInstance(canvas,config,p=>document.getElementById('fill').style.width=(p*100)+'%').then(async instance=>{
+  window.unityInstance=instance;
+  const sdk=await sdkPromise;
+  instance.SendMessage('Game','SetSdkLanguage',sdkLanguage);
+  if(platformPaused)instance.SendMessage('Game','SetSdkPause','true');
+  await new Promise(resolve=>{const frame=()=>window.twerkRaceState?requestAnimationFrame(()=>requestAnimationFrame(resolve)):requestAnimationFrame(frame);frame();});
+  document.getElementById('loading').style.display='none';canvas.focus();
+  if(sdk){sdk.features.LoadingAPI.ready();sdkReadySent=true;window.twerkRaceGameplay(window.twerkRaceState);}
+}).catch(error=>document.getElementById('error').textContent=error);
+document.body.appendChild(script);
+</script></body></html>

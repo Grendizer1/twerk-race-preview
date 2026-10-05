@@ -10,4 +10,6 @@ M uses new Meshy Text-to-Motion clips generated from the E3 brief (best take per
 
 Open the live preview: <https://grendizer1.github.io/twerk-race-preview/>
 
+Play the Unity WebGL game with the sand shoreline and fading footprints: <https://grendizer1.github.io/twerk-race-preview/play/>. The preview runs without Yandex services; ad actions use the local stub.
+
 The production Unity project remains in the private `Grendizer1/twerk-race` repository. This repository contains only the generated standalone preview and does not grant a license to reuse the character or animation assets.
